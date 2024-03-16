@@ -1,0 +1,173 @@
+
+#include <stdio.h>
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
+using namespace std;
+
+struct TemperaturaDia {
+    char fecha[40];
+    float manana;
+    float tarde;
+    float noche;
+    TemperaturaDia *sig;
+};
+
+TemperaturaDia *cab, *aux, *aux2;
+
+int registrar() {
+    system("cls");
+
+    if (cab == NULL) {
+        cab = (struct TemperaturaDia *) malloc(sizeof(struct TemperaturaDia));
+        cout << "<<<<<<<<REGISTRO DE TEMPERATURAS>>>>>>>" << endl;
+        cout << endl;
+        cout << "Ingrese la fecha (dd/mm/aaaa): ";
+        cin >> cab->fecha;
+        cout << "Ingrese la temperatura de la manana (C): ";
+        cin >> cab->manana;
+        cout << "Ingrese la temperatura de la tarde (C): ";
+        cin >> cab->tarde;
+        cout << "Ingrese la temperatura de la noche (C): ";
+        cin >> cab->noche;
+        cab->sig = NULL;
+    } else {
+        aux = (struct TemperaturaDia *) malloc(sizeof(struct TemperaturaDia));
+        cout << "<<<<<<<<REGISTRO DE TEMPERATURAS>>>>>>>" << endl;
+        cout << endl;
+        cout << "Ingrese la fecha (dd/mm/aaaa): ";
+        cin >> aux->fecha;
+        cout << "Ingrese la temperatura de la manana (C): ";
+        cin >> aux->manana;
+        cout << "Ingrese la temperatura de la tarde (C): ";
+        cin >> aux->tarde;
+        cout << "Ingrese la temperatura de la noche (C): ";
+        cin >> aux->noche;
+        aux->sig = NULL;
+        aux2 = cab;
+
+        while (aux2->sig != NULL)
+            aux2 = aux2->sig;
+        aux2->sig = aux;
+        aux2 = aux = NULL;
+        free(aux);
+        free(aux2);
+    }
+    return 0;
+}
+
+int mostrar() {
+    system("cls");
+    int i = 1;
+    cout << "<<<<<<<<REGISTRO DE TEMPERATURAS>>>>>>>" << endl;
+    cout << endl;
+    cout << endl;
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        cout << "Fecha: " << aux->fecha << endl;
+        cout << "Temperatura de la manana: " << aux->manana << "C" << endl;
+        cout << "Temperatura de la tarde: " << aux->tarde << "C" << endl;
+        cout << "Temperatura de la noche: " << aux->noche << "C" << endl;
+        cout << endl;
+        cout << endl;
+        i++;
+    }
+    return 0;
+}
+
+void calcular_promedio_todas_temperaturas() {
+    if (cab == NULL) {
+        cout << "No hay registros de temperaturas." << endl;
+        return;
+    }
+
+    float suma_total_temperaturas = 0;
+    int conteo_total = 0;
+
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        suma_total_temperaturas += aux->manana + aux->tarde + aux->noche;
+        conteo_total += 3;
+    }
+
+    if (conteo_total > 0) {
+        float promedio_total = suma_total_temperaturas / conteo_total;
+        cout << "El promedio de temperatura de todos los registros es: " << promedio_total << "C" << endl;
+    } else {
+        cout << "No hay registros de temperaturas para calcular el promedio." << endl;
+    }
+}
+
+void calcular_promedio_de_un_dia() {
+    if (cab == NULL) {
+        cout << "No hay registros de temperatura." << endl;
+        return;
+    }
+
+    char fecha_consulta[40];
+    cout << "Ingrese la fecha para calcular el promedio de temperatura del dia (dd/mm/aaaa): ";
+    cin >> fecha_consulta;
+
+    float suma_temperaturas = 0;
+    int conteo = 0;
+
+    for (aux = cab; aux != NULL; aux = aux->sig) {
+        if (strcmp(aux->fecha, fecha_consulta) == 0) {
+            suma_temperaturas += aux->manana + aux->tarde + aux->noche;
+            conteo += 3;
+        }
+    }
+
+    if (conteo == 0) {
+        cout << "No hay registros para la fecha especificada." << endl;
+        return;
+    }
+
+    float promedio = suma_temperaturas / conteo;
+    cout << "El promedio de temperatura para " << fecha_consulta << " es: " << promedio << "C" << endl;
+}
+
+int main() {
+    int opc = 0;
+
+    do {
+        cout << endl;
+        cout << "<<<MENU>>>" << endl;
+        cout << endl;
+        cout << "1. REGISTRAR TEMPERATURAS" << endl;
+        cout << "2. MOSTRAR TEMPERATURAS" << endl;
+        cout << "3. CALCULAR PROMEDIO DE TEMPERATURAS DE UN DIA" << endl;
+        cout << "4. CALCULAR PROMEDIO DE TEMPERATURAs DE TODOS LOS DIAS" << endl;
+        cout << "5. SALIR" << endl;
+        cin >> opc;
+        switch (opc) {
+            case 1:
+                registrar();
+                system("cls");
+                break;
+            case 2:
+                mostrar();
+                system("pause");
+                system("cls");
+                break;
+           case 3:
+                calcular_promedio_de_un_dia();
+                system("pause");
+                system("cls");
+                break;
+           case 4:
+                calcular_promedio_todas_temperaturas();
+                system("pause");
+                system("cls"); 
+                break;
+                
+            case 5:
+                cout << "¡Adios!" << endl;
+                break;
+            default:
+                break;
+        }
+    } while (opc != 5);
+
+    return 0;
+}
+
