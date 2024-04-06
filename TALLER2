@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+
+using namespace std;
+
+struct Cliente {
+    int numero_cuenta;
+    int tipo_cuenta;
+    Cliente *sig;
+};
+
+struct FilaEspera {
+    Cliente *inicio;
+    Cliente *fin;
+};
+
+FilaEspera fila_tradicional = {NULL, NULL};
+FilaEspera fila_preferencial = {NULL, NULL};
+
+void registrar_cliente() {
+    int numero_cuenta, tipo_cuenta;
+    cout << "Ingrese el numero de cuenta del cliente: ";
+    cin >> numero_cuenta;
+    cout << "Tipo de cuenta (1 para preferencial, 2 para tradicional): ";
+    cin >> tipo_cuenta;
+
+    Cliente *nuevo_cliente = (Cliente *)malloc(sizeof(Cliente));
+    nuevo_cliente->numero_cuenta = numero_cuenta;
+    nuevo_cliente->tipo_cuenta = tipo_cuenta;
+    nuevo_cliente->sig = NULL;
+
+    if (tipo_cuenta == 1) {
+        if (fila_preferencial.fin == NULL) {
+            fila_preferencial.inicio = fila_preferencial.fin = nuevo_cliente;
+        } else {
+            fila_preferencial.fin->sig = nuevo_cliente;
+            fila_preferencial.fin = nuevo_cliente;
+        }
+    } else {
+        if (fila_tradicional.fin == NULL) {
+            fila_tradicional.inicio = fila_tradicional.fin = nuevo_cliente;
+        } else {
+            fila_tradicional.fin->sig = nuevo_cliente;
+            fila_tradicional.fin = nuevo_cliente;
+        }
+    }
+
+    if (fila_tradicional.inicio != NULL && fila_preferencial.inicio != NULL) {
+        int conteo_tradicional = 0;
+        for (Cliente *temp = fila_tradicional.inicio; temp != NULL; temp = temp->sig) {
+            conteo_tradicional++;
+        }
+
+        int conteo_preferencial = 0;
+        for (Cliente *temp = fila_preferencial.inicio; temp != NULL; temp = temp->sig) {
+            conteo_preferencial++;
+        }
+
+        if (conteo_tradicional >= 5 && conteo_preferencial <= 2) {
+            Cliente *temp = fila_tradicional.inicio;
+            for (int i = 1; i < 3; i++) {
+                temp = temp->sig;
+            }
+
+            fila_tradicional.inicio = temp->sig;
+            temp->sig = NULL;
+
+            if (fila_preferencial.fin == NULL) {
+                fila_preferencial.inicio = fila_preferencial.fin = temp;
+            } else {
+                fila_preferencial.fin->sig = temp;
+                fila_preferencial.fin = temp;
+            }
+        }
+    }
+}
+
+void mostrar_filas() {
+    cout << "FILA PREFERENCIAL:" << endl;
+    int turno = 1;
+    for (Cliente *temp = fila_preferencial.inicio; temp != NULL; temp = temp->sig) {
+        cout << "Turno " << turno++ << ": Cuenta " << temp->numero_cuenta << endl;
+    }
+
+    cout << endl;
+
+    cout << "FILA TRADICIONAL:" << endl;
+    turno = 1;
+    for (Cliente *temp = fila_tradicional.inicio; temp != NULL; temp = temp->sig) {
+        cout << "Turno " << turno++ << ": Cuenta " << temp->numero_cuenta << endl;
+    }
+}
+
+int main() {
+    int opc = 0;
+
+    do {
+        cout << endl;
+        cout << "<<<MENU>>>" << endl;
+        cout << endl;
+        cout << "1. REGISTRAR CLIENTE" << endl;
+        cout << "2. MOSTRAR FILAS" << endl;
+        cout << "3. SALIR" << endl;
+        cin >> opc;
+        switch (opc) {
+            case 1:
+                registrar_cliente();
+                system("cls");
+                break;
+            case 2:
+                mostrar_filas();
+                system("pause");
+                system("cls");
+                break;
+            case 3:
+                cout << "¡Adios!" << endl;
+                break;
+            default:
+                break;
+        }
+    } while (opc != 3);
+
+    return 0;
+}
